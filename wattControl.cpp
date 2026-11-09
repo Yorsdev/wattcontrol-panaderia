@@ -210,9 +210,8 @@ public:
     }
 };
 
-// =============================================================
 // NEGOCIO: Panaderia que administra los equipos y coordina la simulacion
-// =============================================================
+
 class Negocio
 {
 private:
@@ -379,6 +378,68 @@ public:
         cout << "=================== SIMULACIoN FINALIZADA ===================\n"
              << endl;
     }
+
+    // Muestra un resumen de la ultima simulacion realizada
+
+    void resumen()
+    {
+        if (horasSimuladas == 0)
+        {
+            cout << "\n[!] No hay simulación previa registrada. Seleccione la opción 3 en el menú." << endl;
+            return;
+        }
+
+        cout << fixed << setprecision(0);
+        cout << "\n=======================================================" << endl;
+        cout << "         RESUMEN DE OPERACIÓN Y AHORRO ENERGÉTICO       " << endl;
+        cout << "=======================================================" << endl;
+        cout << "Negocio: " << nombre << endl;
+        cout << "Horas Simuladas: " << horasSimuladas << " / " << HORAS_DIA
+             << " | Fallas de Lectura: " << fallasLectura << endl;
+        cout << "-------------------------------------------------------" << endl;
+        cout << "Detalle por Carga:" << endl;
+        for (int i = 0; i < numCargas; i++)
+        {
+            float kwh = cargas[i]->getHorasUso() * cargas[i]->getPotenciaKW();
+            cout << "  * " << setw(18) << left << cargas[i]->getNombre()
+                 << right << cargas[i]->getHorasUso() << " h usadas ("
+                 << setprecision(1) << kwh << " kWh)" << endl;
+        }
+
+        cout << "-------------------------------------------------------" << endl;
+        cout << "VERIFICACIÓN DE HORAS MÍNIMAS REQUERIDAS:" << endl;
+        bool produccionIncompleta = false;
+
+        if (cargas[1]->getHorasUso() < HORAS_MIN_HORNO)
+        {
+            cout << "  [ALERTA]: Horno operó " << cargas[1]->getHorasUso()
+                 << "h (Requerido min: " << HORAS_MIN_HORNO << "h) -> produccion incompleta" << endl;
+            produccionIncompleta = true;
+        }
+        if (cargas[2]->getHorasUso() < HORAS_MIN_AMASADORA)
+        {
+            cout << "  [ALERTA]: Amasadora operó " << cargas[2]->getHorasUso()
+                 << "h (Requerido min: " << HORAS_MIN_AMASADORA << "h) -> produccion incompleta" << endl;
+            produccionIncompleta = true;
+        }
+        if (!produccionIncompleta)
+        {
+            cout << "  [OK] Todas las cargas cumplieron su tiempo mínimo de producción." << endl;
+        }
+
+        cout << "-------------------------------------------------------" << endl;
+        cout << setprecision(0);
+        cout << "Costo TOTAL Sin Gestor:  $" << costoSin << " COP" << endl;
+        cout << "Costo TOTAL Con Gestor:  $" << costoCon << " COP" << endl;
+
+        float ahorroPesos = costoSin - costoCon;
+        float ahorroPorcentaje = (costoSin > 0) ? (ahorroPesos / costoSin) * 100.0 : 0.0;
+
+        cout << "AHORRO ALCANZADO:        $" << ahorroPesos << " COP ("
+             << setprecision(1) << ahorroPorcentaje << " %)" << endl;
+        cout << "=======================================================\n"
+             << endl;
+    }
 };
 
 // PROGRAMA PRINCIPAL: Menu Interactivo con Validacion
@@ -467,7 +528,7 @@ int main()
             break;
 
         case 4:
-            cout << "\n[!] Aún no desarrollada" << endl;
+            panaderia.resumen();
             break;
 
         case 0:
