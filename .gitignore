@@ -1,0 +1,4 @@
+*.exe
+.vscode/
+.PASO_A_PASO
+*.md
