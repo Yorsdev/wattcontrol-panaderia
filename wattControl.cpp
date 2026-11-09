@@ -16,11 +16,11 @@ using namespace std;
 #define SEMILLA 2026 // Semilla para que los precios aleatorios sean siempre los mismos
 
 // --- Valores y limites de nuestra Panaderia --------------------------------
-const float POTENCIA_REFRIGERADOR = 2.5; // kW - Nevera (no se puede apagar)
-const float POTENCIA_HORNO = 6.0;        // kW - Horno (se puede aplazar, es el mas potente)
-const float POTENCIA_AMASADORA = 3.5;    // kW - Amasadora (se puede aplazar)
+const float POTENCIA_REFRIGERADOR = 1.2; // kW - Nevera (no se puede apagar)
+const float POTENCIA_HORNO = 7.0;        // kW - Horno (se puede aplazar, es el mas potente)
+const float POTENCIA_AMASADORA = 2.2;    // kW - Amasadora (se puede aplazar)
 
-const float POTENCIA_CONTRATADA = 10.0; // kW - Lo maximo que soporta el medidor antes de fallar
+const float POTENCIA_CONTRATADA = 9.0; // kW - Lo maximo que soporta el medidor antes de fallar
 
 const float PRECIO_CARO = 800.0;     // COP/kWh - Si pasa de este valor, la energia es costosa
 const float PRECIO_ESCASEZ = 1500.0; // COP/kWh - Si pasa de aqui, entramos en emergencia
