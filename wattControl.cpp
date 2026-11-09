@@ -1,9 +1,3 @@
-// =============================================================
-// WattControl v2 - Gestor Inteligente de Energía para un Negocio
-// Evidencia de Aprendizaje 2 (EA2) - POO con Herencia y Polimorfismo
-// Negocio: Panadería (Dígito 0 - 1)
-// =============================================================
-
 // --- Librerías necesarias ----------------------------------------------------
 #include <iostream> // Entradas y salidas por consola (cin, cout)
 #include <iomanip>  // Formato de salida (setw, setprecision, fixed)
@@ -36,10 +30,9 @@ const int HORAS_MIN_AMASADORA = 4; // Requisito mínimo de operación
 
 const int FALLA_CADA = 20; // 5% de probabilidad de falla de lectura
 
-// =============================================================
 // CLASE BASE ABSTRACTA: Carga
 // Molde general para los equipos eléctricos del negocio
-// =============================================================
+
 class Carga
 {
 protected:
@@ -97,10 +90,9 @@ public:
     int getHorasUso() { return horasUso; }
 };
 
-// =============================================================
 // HERENCIA Y POLIMORFISMO: CargaCritica
-// Cargas prioritarias que nunca se apagan (Ej: Refrigeración)
-// =============================================================
+// Cargas prioritarias que nunca se deben apagar
+
 class CargaCritica : public Carga
 {
 public:
@@ -113,10 +105,9 @@ public:
     }
 };
 
-// =============================================================
 // HERENCIA Y POLIMORFISMO: CargaAplazable
 // Cargas condicionadas a horario, precio de bolsa y embalses
-// =============================================================
+
 class CargaAplazable : public Carga
 {
 public:
@@ -139,25 +130,161 @@ public:
     }
 };
 
+// RELACIÓN 3: COMPOSICIÓN (Medidor dentro de Negocio)
+// Registra la energía total consumida y los costos acumulados
+
+class Medidor
+{
+private:
+    float kWhAcumulados;  // Total energía consumida (kWh)
+    float costoAcumulado; // Costo financiero acumulado (COP)
+
+public:
+    Medidor()
+    {
+        kWhAcumulados = 0.0;
+        costoAcumulado = 0.0;
+    }
+
+    void registrarConsumo(float kw, float precio)
+    {
+        kWhAcumulados += kw;
+        costoAcumulado += (kw * precio);
+    }
+
+    void reiniciar()
+    {
+        kWhAcumulados = 0.0;
+        costoAcumulado = 0.0;
+    }
+
+    float getKWh() { return kWhAcumulados; }
+    float getCosto() { return costoAcumulado; }
+};
+
+// RELACIÓN 4: ASOCIACIÓN (Mercado externo al Negocio)
+// Ofrece los precios simulados del mercado eléctrico y estado embalses
+
+class Mercado
+{
+public:
+    float precioHora(int hora)
+    {
+        int minimo, maximo;
+        if (hora <= 6)
+        { // Madrugada
+            minimo = 398;
+            maximo = 640;
+        }
+        else if (hora <= 14)
+        { // Mañana y mediodía
+            minimo = 456;
+            maximo = 970;
+        }
+        else if (hora <= 17)
+        { // Tarde
+            minimo = 596;
+            maximo = 1040;
+        }
+        else if (hora <= 20)
+        { // Hora pico
+            minimo = 705;
+            maximo = 1612;
+        }
+        else
+        { // Noche
+            minimo = 565;
+            maximo = 970;
+        }
+        return minimo + rand() % (maximo - minimo + 1);
+    }
+
+    float nivelEmbalses()
+    {
+        return 38.5; // Simulación durante contingencia de El Niño (< 40%)
+    }
+};
+
+// RELACIÓN 5: AGREGACIÓN (Negocio agrega Cargas externas)
+// Reúne Medidor (composición), Mercado (asociación) y Cargas (agregación)
+
+class Negocio
+{
+private:
+    string nombre;             // Nombre del negocio
+    Medidor medidor;           // COMPOSICIÓN: El medidor nace y muere con el negocio
+    Carga *cargas[MAX_CARGAS]; // AGREGACIÓN: Arreglo de punteros a Cargas externas
+    int numCargas;             // Cantidad de cargas agregadas
+    Mercado *mercado;          // ASOCIACIÓN: Conexión externa con la red/mercado
+
+public:
+    Negocio(string n, Mercado *m)
+    {
+        nombre = n;
+        mercado = m;
+        numCargas = 0;
+    }
+
+    // Agrega cargas creadas exteriormente (Agregación)
+    void agregarCarga(Carga *c)
+    {
+        if (numCargas < MAX_CARGAS)
+        {
+            cargas[numCargas] = c;
+            numCargas++;
+        }
+    }
+
+    void mostrarCargas()
+    {
+        cout << "--- Negocio: " << nombre << " ---" << endl;
+        cout << "Potencia Contratada: " << POTENCIA_CONTRATADA << " kW" << endl;
+        cout << "Cargas registradas en el gestor:" << endl;
+
+        for (int i = 0; i < numCargas; i++)
+        {
+            cout << "  - " << setw(18) << left << cargas[i]->getNombre()
+                 << right << cargas[i]->getPotenciaKW() << " kW" << endl;
+        }
+        cout << "---------------------------------------" << endl;
+    }
+
+    // Evalúa la decisión de encendido mediante Polimorfismo
+    void evaluar(int hora, float precio, float embalses)
+    {
+        cout << "\n--- Evaluacion puntual (Hora: " << hora << "h | Precio: $"
+             << precio << " | Embalses: " << embalses << "%) ---" << endl;
+
+        for (int i = 0; i < numCargas; i++)
+        {
+            bool decide = cargas[i]->debeEncender(hora, precio, embalses);
+            cout << "  " << setw(18) << left << cargas[i]->getNombre() << right
+                 << (decide ? "ENCENDER (ON)" : "APLAZAR (OFF)") << endl;
+        }
+    }
+};
+
 int main()
 {
-    cout << "=== WattControl: Prueba de Herencia y Polimorfismo ===" << endl;
+    // Instanciación del Mercado (Asociación)
+    Mercado mercado;
 
-    // Instanciación de cargas usando punteros a la clase base
-    Carga *refri = new CargaCritica("Refrigerador", POTENCIA_REFRIGERADOR);
-    Carga *horno = new CargaAplazable("Horno Industrial", POTENCIA_HORNO);
+    // Creación externa de las Cargas (Herencia y Polimorfismo)
+    CargaCritica refrigerador("Refrigerador", POTENCIA_REFRIGERADOR);
+    CargaAplazable horno("Horno Industrial", POTENCIA_HORNO);
+    CargaAplazable amasadora("Amasadora", POTENCIA_AMASADORA);
 
-    // Lectura de prueba: Hora pico (19h), Precio caro ($900), Embalses normales (50%)
-    int hora = 19;
-    float precio = 900.0;
-    float embalses = 50.0;
+    // Creación del Negocio y Agregación de Cargas
+    Negocio panaderia("Panaderia Belen", &mercado);
+    panaderia.agregarCarga(&refrigerador);
+    panaderia.agregarCarga(&horno);
+    panaderia.agregarCarga(&amasadora);
 
-    cout << "Lectura -> Hora: " << hora << "h | Precio: $" << precio << " | Embalses: " << embalses << "%" << endl;
-    cout << refri->getNombre() << ": " << (refri->debeEncender(hora, precio, embalses) ? "ENCENDER" : "APLAZAR") << endl;
-    cout << horno->getNombre() << ": " << (horno->debeEncender(hora, precio, embalses) ? "ENCENDER" : "APLAZAR") << endl;
+    // Presentación de la infraestructura del negocio
+    panaderia.mostrarCargas();
 
-    delete refri;
-    delete horno;
+    // Prueba puntual de evaluación con datos de prueba
+    panaderia.evaluar(19, 900.0, 50.0);
 
     return 0;
 }
