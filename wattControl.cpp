@@ -385,13 +385,13 @@ public:
     {
         if (horasSimuladas == 0)
         {
-            cout << "\n[!] No hay simulación previa registrada. Seleccione la opción 3 en el menú." << endl;
+            cout << "\n[!] No hay simulacion previa registrada. Seleccione la opcion 3 en el menu." << endl;
             return;
         }
 
         cout << fixed << setprecision(0);
         cout << "\n=======================================================" << endl;
-        cout << "         RESUMEN DE OPERACIÓN Y AHORRO ENERGÉTICO       " << endl;
+        cout << "         RESUMEN DE OPERACION Y AHORRO ENERGETICO       " << endl;
         cout << "=======================================================" << endl;
         cout << "Negocio: " << nombre << endl;
         cout << "Horas Simuladas: " << horasSimuladas << " / " << HORAS_DIA
@@ -407,24 +407,24 @@ public:
         }
 
         cout << "-------------------------------------------------------" << endl;
-        cout << "VERIFICACIÓN DE HORAS MÍNIMAS REQUERIDAS:" << endl;
+        cout << "VERIFICACION DE HORAS MINIMAS REQUERIDAS:" << endl;
         bool produccionIncompleta = false;
 
         if (cargas[1]->getHorasUso() < HORAS_MIN_HORNO)
         {
-            cout << "  [ALERTA]: Horno operó " << cargas[1]->getHorasUso()
+            cout << "  [ALERTA]: Horno opero " << cargas[1]->getHorasUso()
                  << "h (Requerido min: " << HORAS_MIN_HORNO << "h) -> produccion incompleta" << endl;
             produccionIncompleta = true;
         }
         if (cargas[2]->getHorasUso() < HORAS_MIN_AMASADORA)
         {
-            cout << "  [ALERTA]: Amasadora operó " << cargas[2]->getHorasUso()
+            cout << "  [ALERTA]: Amasadora opero " << cargas[2]->getHorasUso()
                  << "h (Requerido min: " << HORAS_MIN_AMASADORA << "h) -> produccion incompleta" << endl;
             produccionIncompleta = true;
         }
         if (!produccionIncompleta)
         {
-            cout << "  [OK] Todas las cargas cumplieron su tiempo mínimo de producción." << endl;
+            cout << "  [OK] Todas las cargas cumplieron su tiempo mInimo de produccion." << endl;
         }
 
         cout << "-------------------------------------------------------" << endl;
