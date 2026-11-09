@@ -1,9 +1,9 @@
 # ⚡ WattControl - Gestor Inteligente de Energía para Negocios
 
-> **Programa:** Ingeniería Mecatrónica — IU Digital de Antioquia (2026-2)  
-> **Asignatura:** Programación Orientada a Objetos (POO)  
+> **Programa:** Ingeniería de Software y Datos — IU Digital de Antioquia (2026-2)  
+> **Asignatura:** Programación Orientada a Objetos (POO) - PREICA2602B020043
 > **Evidencia:** EA2. Clases con Herencia, Polimorfismo y Relaciones  
-> **Caso de Estudio:** Panadería (Dígito de Identificación: `0 - 1`)
+> **Caso de Estudio:** Panadería
 
 ---
 
