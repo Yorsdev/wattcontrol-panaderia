@@ -97,9 +97,67 @@ public:
     int getHorasUso() { return horasUso; }
 };
 
+// =============================================================
+// HERENCIA Y POLIMORFISMO: CargaCritica
+// Cargas prioritarias que nunca se apagan (Ej: Refrigeración)
+// =============================================================
+class CargaCritica : public Carga
+{
+public:
+    CargaCritica(string n, float p) : Carga(n, p) {}
+
+    // Implementación polimórfica: Siempre devuelve true
+    bool debeEncender(int hora, float precio, float embalses) override
+    {
+        return true; // Nunca se aplaza ni se apaga
+    }
+};
+
+// =============================================================
+// HERENCIA Y POLIMORFISMO: CargaAplazable
+// Cargas condicionadas a horario, precio de bolsa y embalses
+// =============================================================
+class CargaAplazable : public Carga
+{
+public:
+    CargaAplazable(string n, float p) : Carga(n, p) {}
+
+    // Implementación polimórfica con condición compuesta
+    bool debeEncender(int hora, float precio, float embalses) override
+    {
+        bool esHoraPico = (hora >= PICO_INICIO && hora <= PICO_FIN);
+        bool precioElevado = (precio > PRECIO_CARO);
+        bool embalsesBajos = (embalses < EMBALSES_ALERTA);
+
+        // Regla compuesta: Se aplaza si ocurre CUALQUIERA de las condiciones
+        if (esHoraPico || precioElevado || embalsesBajos)
+        {
+            return false; // Decisión: Apagar / Aplazar
+        }
+
+        return true; // Decisión: Encender
+    }
+};
+
 int main()
 {
-    cout << "=== WattControl: Estructura Inicial Cargada ===" << endl;
-    cout << "Potencia Contratada: " << POTENCIA_CONTRATADA << " kW" << endl;
+    cout << "=== WattControl: Prueba de Herencia y Polimorfismo ===" << endl;
+
+    // Instanciación de cargas usando punteros a la clase base
+    Carga *refri = new CargaCritica("Refrigerador", POTENCIA_REFRIGERADOR);
+    Carga *horno = new CargaAplazable("Horno Industrial", POTENCIA_HORNO);
+
+    // Lectura de prueba: Hora pico (19h), Precio caro ($900), Embalses normales (50%)
+    int hora = 19;
+    float precio = 900.0;
+    float embalses = 50.0;
+
+    cout << "Lectura -> Hora: " << hora << "h | Precio: $" << precio << " | Embalses: " << embalses << "%" << endl;
+    cout << refri->getNombre() << ": " << (refri->debeEncender(hora, precio, embalses) ? "ENCENDER" : "APLAZAR") << endl;
+    cout << horno->getNombre() << ": " << (horno->debeEncender(hora, precio, embalses) ? "ENCENDER" : "APLAZAR") << endl;
+
+    delete refri;
+    delete horno;
+
     return 0;
 }
