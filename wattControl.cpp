@@ -248,17 +248,55 @@ public:
         }
     }
 
-    // Revisa puntual que haria cada equipo con datos especificos
+    // Revisa puntual que haria cada equipo con datos especificos y aplica la Regla 6
     void evaluar(int hora, float precio, float embalses)
     {
+        float potenciaTotal = 0.0;
+
+        // 1. Evaluación individual de cada carga (Reglas 1 a 5)
+        for (int i = 0; i < numCargas; i++)
+        {
+            if (cargas[i]->debeEncender(hora, precio, embalses))
+            {
+                cargas[i]->encender();
+                potenciaTotal += cargas[i]->getPotenciaKW();
+            }
+            else
+            {
+                cargas[i]->apagar();
+            }
+        }
+
+        // 2. REGLA 6: Control de Potencia Contratada (Límite de 9.0 kW para Panadería)
+        if (potenciaTotal > POTENCIA_CONTRATADA)
+        {
+            cout << "\n [ALERTA!]: Potencia encendida (" << potenciaTotal
+                 << " kW) supera el limite contratado (" << POTENCIA_CONTRATADA << " kW)." << endl;
+            cout << " -> Apagando la carga aplazable de mayor consumo (Horno Industrial)..." << endl;
+
+            // Buscar y apagar la carga aplazable de mayor potencia (Horno)
+            for (int i = 0; i < numCargas; i++)
+            {
+                if (cargas[i]->getNombre() == "Horno Industrial" || cargas[i]->getNombre() == "Horno")
+                {
+                    if (cargas[i]->isEncendida())
+                    {
+                        cargas[i]->apagar();
+                        potenciaTotal -= cargas[i]->getPotenciaKW();
+                    }
+                    break;
+                }
+            }
+        }
+
+        // 3. Mostrar el estado final ajustado en consola
         cout << "\n--- Evaluacion puntual (Hora: " << hora << "h | Precio: $"
              << precio << " | Embalses: " << embalses << "%) ---" << endl;
 
         for (int i = 0; i < numCargas; i++)
         {
-            bool decide = cargas[i]->debeEncender(hora, precio, embalses);
             cout << "  " << setw(18) << left << cargas[i]->getNombre() << right
-                 << (decide ? "ENCENDER (ON)" : "APLAZAR (OFF)") << endl;
+                 << (cargas[i]->isEncendida() ? "ENCENDER (ON)" : "APAZAR / OFF") << endl;
         }
     }
 
